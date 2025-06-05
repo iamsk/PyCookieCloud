@@ -61,8 +61,7 @@ class PyCookieCloud:
             try:
                 decrypted_data = decrypt(encrypted_data, self.get_the_key().encode('utf-8')).decode('utf-8')
                 decrypted_data = json.loads(decrypted_data)
-                if 'cookie_data' in decrypted_data:
-                    return decrypted_data['cookie_data']
+                return decrypted_data
             except Exception as e:
                 return None
         else:
@@ -76,7 +75,7 @@ class PyCookieCloud:
         :param key: the key of the cookie.
         :return: the cookie value if the decryption is successful, None otherwise.
         """
-        decrypted_data = self.get_decrypted_data()
+        decrypted_data = self.get_decrypted_data().get('cookie_data', None)
         if decrypted_data is not None:
             if hostname in decrypted_data:
                 for value in decrypted_data[hostname]:
@@ -94,7 +93,7 @@ class PyCookieCloud:
         :param all_keys_required: will return None if not all keys are matched when all_keys_required is True.
         :return:
         """
-        decrypted_data = self.get_decrypted_data()
+        decrypted_data = self.get_decrypted_data().get('cookie_data', None)
         if decrypted_data is not None:
             if hostname in decrypted_data:
                 cookie_str = ""
@@ -115,6 +114,7 @@ class PyCookieCloud:
     def update_cookie(self, cookie: Dict[str, Any]) -> bool:
         """
         Update cookie data to CookieCloud.
+        You can also update decrypted_data(cookie_data and local_storage_data) as cookie
 
         :param cookie: cookie value to update, if this cookie does not contain 'cookie_data' key, it will be added into 'cookie_data'.
         :return: if update success, return True, else return False.
